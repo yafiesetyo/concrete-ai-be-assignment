@@ -1,59 +1,23 @@
 # Take home assignment
 
-
 ## Description:
-Build 2 Backend services which manages user’s accounts and transactions (send/withdraw). 
 
-In Account Manager service, we have:
-- User: Login with Id/Password
-- Payment Account: One user can have multiple accounts like credit, debit, loan...
-- Payment History: Records of transactions
+There's 2 services for handle each domain:
 
-In Payment Manager service, we have:
-- Transaction: Include basic information like amount, timestamp, toAddress, status...
-- We have a core transaction process function, that will be executed by `/send` or `/withdraw` API:
+1. **go-payment-srv**: Golang based service to handle transaction processes like withdraw and send money.
+2. **node-account-srv**: Node based service to handle account creation and authentication
 
-```js
-function processTransaction(transaction) {
-    return new Promise((resolve, reject) => {
-        console.log('Transaction processing started for:', transaction);
+For details, you can check here: https://www.notion.so/Concrete-ai-Test-Docs-9d4197ab0d4b4d62ac4a2cdfd91716d3?pvs=4
 
-        // Simulate long running process
-        setTimeout(() => {
-            // After 30 seconds, we assume the transaction is processed successfully
-            console.log('transaction processed for:', transaction);
-            resolve(transaction);
-        }, 30000); // 30 seconds
-    });
-}
+## How To Run
 
-// Example usage
-let transaction = { amount: 100, currency: 'USD' }; // Sample transaction input
-processTransaction(transaction)
-    .then((processedTransaction) => {
-        console.log('transaction processing completed for:', processedTransaction);
-    })
-    .catch((error) => {
-        console.error('transaction processing failed:', error);
-    });
+1. run these command
+
+```console
+docker-compose -f deployment/docker-compose.yml up -d --build
 ```
 
-Features:
-- Users need to register/log in and then be able to call APIs.
-- APIs for 2 operations send/withdraw. Account statements will be updated after the transaction is successful.
-- APIs to retrieve all accounts and transactions per account of the user.
-- Write Swagger docs for implemented APIs (Optional)
-- Auto Debit/Recurring Payments: Users should be able to set up recurring payments. These payments will automatically be processed at specified intervals. (Optional)
-
-### Tech-stack:
-- Recommend using authentication 3rd party: Supertokens, Supabase...
-- `NodeJs/Golang` for API server (`Fastify/Gin` framework is the best choices)
-- `PostgreSQL/MongoDB` for Database. Recommend using `Prisma` for ORM.
-- `Docker` for containerization. Recommend using `docker-compose` for running containers.
- 
-## Target:
-- Good document/README to describe your implementation.
-- Make sure app functionality works as expected. Run and test it well.
-- Containerized and run the app using Docker.
-- Using `docker-compose` or any automation script to run the app with single command is a plus.
-- Job schedulers utilization is a plus
+2. after container success deployed, go to `services/node-account-srv` then run `./migrate.sh` on your local machine
+3. check two services is ready to serve
+   1. go-payment-srv: `http://localhost:8001`
+   2. node-account-srv: `http://localhost:8000`

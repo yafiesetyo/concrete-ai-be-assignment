@@ -1,0 +1,51 @@
+version: "3.9"
+services:
+  db:
+    image: postgres:14-alpine
+    restart: always
+    ports:
+      - 5432:5432
+    volumes:
+      - ./scripts/init_db.sh:/docker-entrypoint-initdb.d/init_db.sh
+    environment:
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_USER=transaction_user
+      - POSTGRES_DB=transaction
+    networks:
+      - srv
+
+  redis:
+    image: redis:latest
+    ports:
+      - "6381:6379"
+    volumes:
+      - ~/apps/redis/dаta:/root/redis
+      - ~/apps/redis/redis.conf:/usr/local/etc/redis/redis.conf
+
+  node-account-srv:
+    build:
+      context: ../services/node-account-srv
+    environment:
+      - SUPABASE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFuanBxcWt3Y2pyZXphdnRjb3NtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjI5NTYwOTgsImV4cCI6MjAzODUzMjA5OH0.ORm5Vgcyepi7BAYZzYWG_S-1OXgNaR2Q1DlppsmfAwI
+      - SUPABASE_URL=https://anjpqqkwcjrezavtcosm.supabase.co=value
+    ports:
+      - "8000:8000"
+    networks:
+      - srv
+    depends_on:
+      - db
+
+  go-payment-srv:
+    build:
+      context: ../services/go-payment-srv
+    ports:
+      - "8001:8001"
+    networks:
+      - srv
+    depends_on:
+      - db
+      - node-account-srv
+
+networks:
+  srv:
+    driver: bridge

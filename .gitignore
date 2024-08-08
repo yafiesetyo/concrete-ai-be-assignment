@@ -1,0 +1,4 @@
+services/node-account-srv/dist
+services/node-account-srv/node_modules
+
+db/node_modules

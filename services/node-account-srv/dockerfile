@@ -1,0 +1,24 @@
+FROM node:alpine
+
+WORKDIR /app
+
+COPY package*.json ./
+
+RUN npm install
+
+COPY prisma ./prisma/
+RUN npx prisma generate
+
+ENV SUPABASE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFuanBxcWt3Y2pyZXphdnRjb3NtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjI5NTYwOTgsImV4cCI6MjAzODUzMjA5OH0.ORm5Vgcyepi7BAYZzYWG_S-1OXgNaR2Q1DlppsmfAwI
+ENV SUPABASE_URL=https://anjpqqkwcjrezavtcosm.supabase.co
+ENV DATABASE_URL=postgresql://transaction_user:password@db/transaction?schema=public
+
+COPY . .
+
+RUN npx prisma generate
+
+RUN npm run build
+
+EXPOSE 8000
+
+CMD ["npm", "start"]
